@@ -85,7 +85,8 @@ const updateIncome = async (req, res) => {
     if (!updatedIncome) {
       return res.status(404).json({ message: "income not found" });
     }
-    await updateIncome.save();
+    await updatedIncome.save();
+
     return res.status(200).json({ message: "income updated successfully" });
   } catch (error) {
     console.log(error);
