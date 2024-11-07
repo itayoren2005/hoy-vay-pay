@@ -1,4 +1,9 @@
-const { signUpSchema, signInSchema } = require("../lib/validation/user");
+const {
+  signUpSchema,
+  signInSchema,
+  updatedUserScheme,
+  userIdValidation,
+} = require("../lib/validation/user");
 const User = require("../models/user");
 const { z } = require("zod");
 const bcrypt = require("bcrypt");
@@ -72,9 +77,68 @@ const signOut = async (req, res) => {
     return res.status(500).json({ message: "internal server error" });
   }
 };
+const updateUser = async (req, res) => {
+  try {
+    const userId = userIdValidation.parse(req.params.userId);
+
+    const { fullName, username, email, password, updatedPassword } =
+      updatedUserScheme.parse(req.body);
+
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, userExists.password);
+    if (!passwordMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Check for unique username
+    const usernameExists = await User.findOne({
+      username,
+      _id: { $ne: userId },
+    });
+    if (usernameExists) {
+      return res.status(400).json({ message: "Username already in use" });
+    }
+
+    // Check for unique email
+    const emailExists = await User.findOne({ email, _id: { $ne: userId } });
+    if (emailExists) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    const hashedPassword = await bcrypt.hash(updatedPassword, 10);
+
+    const updatedUser = await User.findByIdAndUpdate(userId, {
+      fullName,
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.clearCookie("token");
+    setTokenCookie(res, updatedUser, process.env.JWT_SECRET);
+    await updatedUser.save();
+
+    return res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    console.log(error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ message: error.errors[0].message });
+    }
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 module.exports = {
   signUp,
   signIn,
   signOut,
+  updateUser,
 };

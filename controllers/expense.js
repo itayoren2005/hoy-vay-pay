@@ -1,17 +1,17 @@
-const Income = require("../models/income");
+const Expense = require("../models/expense");
 const User = require("../models/user");
 const {
-  incomeScheme,
-  incomeIdValidation,
-} = require("../lib/validation/income");
+  expenseScheme,
+  expenseIdValidation,
+} = require("../lib/validation/expense");
 const { userIdValidation } = require("../lib/validation/user");
 const { z } = require("zod");
 
-const addIncome = async (req, res) => {
+const addExpense = async (req, res) => {
   try {
     const userId = userIdValidation.parse(req.params.userId);
 
-    const { title, description, amount, tag, currency } = incomeScheme.parse(
+    const { title, description, amount, tag, currency } = expenseScheme.parse(
       req.body
     );
 
@@ -20,12 +20,12 @@ const addIncome = async (req, res) => {
       return res.status(404).json({ message: "user not found" });
     }
 
-    const income = new Income({ title, description, amount, tag, currency });
-    await income.save();
-    userExists.incomes.push(income);
+    const expense = new Expense({ title, description, amount, tag, currency });
+    await expense.save();
+    userExists.expenses.push(expense);
     await userExists.save();
 
-    return res.status(201).json({ message: "income created" });
+    return res.status(201).json({ message: "expense created" });
   } catch (error) {
     console.log(error);
     if (error instanceof z.ZodError) {
@@ -35,7 +35,7 @@ const addIncome = async (req, res) => {
   }
 };
 
-const getIncomes = async (req, res) => {
+const getExpenses = async (req, res) => {
   try {
     const userId = userIdValidation.parse(req.params.userId);
 
@@ -44,9 +44,9 @@ const getIncomes = async (req, res) => {
       return res.status(404).json({ message: "user not found" });
     }
 
-    const incomes = await Income.find({ _id: { $in: userExists.incomes } });
+    const expenses = await Expense.find({ _id: { $in: userExists.expenses } });
 
-    return res.status(200).json(incomes);
+    return res.status(200).json(expenses);
   } catch (error) {
     console.log(error);
     if (error instanceof z.ZodError) {
@@ -56,12 +56,12 @@ const getIncomes = async (req, res) => {
   }
 };
 
-const updateIncome = async (req, res) => {
+const updateExpense = async (req, res) => {
   try {
     const userId = userIdValidation.parse(req.params.userId);
-    const incomeId = incomeIdValidation.parse(req.params.incomeId);
+    const expenseId = expenseIdValidation.parse(req.params.expenseId);
 
-    const { title, description, amount, tag, currency } = incomeScheme.parse(
+    const { title, description, amount, tag, currency } = expenseScheme.parse(
       req.body
     );
 
@@ -70,11 +70,11 @@ const updateIncome = async (req, res) => {
       return res.status(404).json({ message: "user not found" });
     }
 
-    if (!userExists.incomes.includes(incomeId)) {
-      return res.status(404).json({ message: "income not found" });
+    if (!userExists.expenses.includes(expenseId)) {
+      return res.status(404).json({ message: "expense not found" });
     }
 
-    const updatedIncome = await Income.findByIdAndUpdate(incomeId, {
+    const updatedExpense = await Expense.findByIdAndUpdate(expenseId, {
       title,
       description,
       amount,
@@ -82,12 +82,12 @@ const updateIncome = async (req, res) => {
       currency,
     });
 
-    if (!updatedIncome) {
-      return res.status(404).json({ message: "income not found" });
+    if (!updatedExpense) {
+      return res.status(404).json({ message: "expense not found" });
     }
-    await updatedIncome.save();
+    await updatedExpense.save();
 
-    return res.status(200).json({ message: "income updated successfully" });
+    return res.status(200).json({ message: "expense updated successfully" });
   } catch (error) {
     console.log(error);
     if (error instanceof z.ZodError) {
@@ -97,31 +97,31 @@ const updateIncome = async (req, res) => {
   }
 };
 
-const deleteIncome = async (req, res) => {
+const deleteExpense = async (req, res) => {
   try {
     const userId = userIdValidation.parse(req.params.userId);
-    const incomeId = incomeIdValidation.parse(req.params.incomeId);
+    const expenseId = expenseIdValidation.parse(req.params.expenseId);
 
     const userExists = await User.findById(userId);
     if (!userExists) {
       return res.status(404).json({ message: "user not found" });
     }
 
-    if (!userExists.incomes.includes(incomeId)) {
-      return res.status(404).json({ message: "income not found" });
+    if (!userExists.expenses.includes(expenseId)) {
+      return res.status(404).json({ message: "expense not found" });
     }
 
-    const deletedIncome = await Income.findByIdAndDelete(incomeId);
-    if (!deletedIncome) {
-      return res.status(404).json({ message: "income not found" });
+    const deletedExpense = await Expense.findByIdAndDelete(expenseId);
+    if (!deletedExpense) {
+      return res.status(404).json({ message: "expense not found" });
     }
 
-    userExists.incomes = userExists.incomes.filter(
-      (id) => id.toString() !== incomeId
+    userExists.expenses = userExists.expenses.filter(
+      (id) => id.toString() !== expenseId
     );
     await userExists.save();
 
-    return res.status(200).json({ message: "income deleted successfully" });
+    return res.status(200).json({ message: "expense deleted successfully" });
   } catch (error) {
     console.log(error);
     if (error instanceof z.ZodError) {
@@ -132,8 +132,8 @@ const deleteIncome = async (req, res) => {
 };
 
 module.exports = {
-  addIncome,
-  getIncomes,
-  updateIncome,
-  deleteIncome,
+  addExpense,
+  getExpenses,
+  updateExpense,
+  deleteExpense,
 };
