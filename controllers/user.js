@@ -81,17 +81,20 @@ const updateUser = async (req, res) => {
   try {
     const userId = userIdValidation.parse(req.params.userId);
 
-    const { fullName, username, email, password, updatedPassword } =
-      updatedUserScheme.parse(req.body);
+    const { fullName, username, email, password } = updatedUserScheme.parse(
+      req.body
+    );
 
     const userExists = await User.findById(userId);
     if (!userExists) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const passwordMatch = await bcrypt.compare(password, userExists.password);
-    if (!passwordMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+    if (password) {
+      const passwordMatch = await bcrypt.compare(password, userExists.password);
+      if (!passwordMatch) {
+        return res.status(400).json({ message: "Invalid credentials" });
+      }
     }
 
     // Check for unique username
@@ -109,14 +112,20 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    const hashedPassword = await bcrypt.hash(updatedPassword, 10);
+    const hashedPassword = password
+      ? await bcrypt.hash(password, 10)
+      : userExists.password;
 
-    const updatedUser = await User.findByIdAndUpdate(userId, {
-      fullName,
-      username,
-      email,
-      password: hashedPassword,
-    });
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        fullName: fullName ?? userExists.fullName,
+        username: username ?? userExists.username,
+        email: email ?? userExists.email,
+        password: hashedPassword,
+      },
+      { new: true }
+    );
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
