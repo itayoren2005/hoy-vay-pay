@@ -9,6 +9,10 @@ const { z } = require("zod");
 
 const addIncome = async (req, res) => {
   try {
+    if (req.user._id !== req.params.userId) {
+      return res.status(403).json({ message: "forbidden" });
+    }
+
     const userId = userIdValidation.parse(req.params.userId);
 
     const { title, description, amount, tag, currency } = incomeScheme.parse(
@@ -37,6 +41,9 @@ const addIncome = async (req, res) => {
 
 const getIncomes = async (req, res) => {
   try {
+    if (req.user._id !== req.params.userId) {
+      return res.status(403).json({ message: "forbidden" });
+    }
     const userId = userIdValidation.parse(req.params.userId);
 
     const userExists = await User.findById(userId);
@@ -58,6 +65,9 @@ const getIncomes = async (req, res) => {
 
 const updateIncome = async (req, res) => {
   try {
+    if (req.user._id !== req.params.userId) {
+      return res.status(403).json({ message: "forbidden" });
+    }
     const userId = userIdValidation.parse(req.params.userId);
     const incomeId = incomeIdValidation.parse(req.params.incomeId);
 
@@ -99,6 +109,9 @@ const updateIncome = async (req, res) => {
 
 const deleteIncome = async (req, res) => {
   try {
+    if (req.user._id !== req.params.userId) {
+      return res.status(403).json({ message: "forbidden" });
+    }
     const userId = userIdValidation.parse(req.params.userId);
     const incomeId = incomeIdValidation.parse(req.params.incomeId);
 

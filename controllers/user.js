@@ -79,6 +79,9 @@ const signOut = async (req, res) => {
 };
 const updateUser = async (req, res) => {
   try {
+    if (req.user._id !== req.params.userId) {
+      return res.status(403).json({ message: "forbidden" });
+    }
     const userId = userIdValidation.parse(req.params.userId);
 
     const { fullName, username, email, password } = updatedUserScheme.parse(

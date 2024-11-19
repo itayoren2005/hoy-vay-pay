@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const { now } = require("mongoose");
 
 const auth = async (req, res, next) => {
   try {
@@ -13,7 +14,11 @@ const auth = async (req, res, next) => {
       throw new Error("invalid token");
     }
 
-    const user = await User.findOne({ _id: decoded.id });
+    if (decoded.exp < Date.now() / 1000) {
+      throw new Error("token required");
+    }
+
+    const user = await User.findById(decoded.id);
     if (!user) {
       throw new Error("user not found");
     }
