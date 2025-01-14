@@ -3,20 +3,19 @@ import { AuthForm } from "./components/AuthForm";
 import { ToastContainer } from "react-toastify";
 import { Route, Routes } from "react-router";
 import { Dashboard } from "./components/Dashboard";
-import { useEffect } from "react";
-import { me } from "./api/auth";
 import { Navbar } from "./components/Navbar";
+import { useAuth } from "./components/AuthProvider";
 
 function App() {
-  const isLogedIn = true;
+  const { user, isPending, isLoggedIn } = useAuth();
 
-  useEffect(() => {
-    me().then((data) => console.log(data));
-  }, []);
+  if (isPending) return <div>Loading...</div>;
+
+  console.log(user);
 
   return (
     <>
-      {isLogedIn ? <Navbar /> : null}
+      {isLoggedIn ? <Navbar /> : null}
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/auth" element={<AuthForm />} />

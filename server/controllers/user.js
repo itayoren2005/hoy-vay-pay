@@ -68,15 +68,17 @@ const signIn = async (req, res) => {
     return res.status(500).json({ message: "internal server error" });
   }
 };
-const signOut = async (req, res) => {
+
+const logOut = async (req, res) => {
   try {
     res.clearCookie("token");
-    return res.status(200).json({ message: "user signed out seccessfuly" });
+    return res.status(200).json({ message: "user signed out sucssefuly" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "internal server error" });
   }
 };
+
 const updateUser = async (req, res) => {
   try {
     if (req.user._id !== req.params.userId) {
@@ -157,7 +159,7 @@ const me = async (req, res) => {
       fullName,
       username,
       id: _id,
-      exp,
+      tokenExpired: exp,
     };
     return res.status(200).json(user);
   } catch (error) {
@@ -169,7 +171,6 @@ const me = async (req, res) => {
 module.exports = {
   signUp,
   signIn,
-  signOut,
-  updateUser,
+  logOut,
   me,
 };

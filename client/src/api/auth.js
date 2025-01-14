@@ -30,9 +30,9 @@ export const signIn = async (payload) => {
 
 export const logOut = async () => {
   try {
-    const { data } = await api.post("/log-out");
+    await api.post("/log-out");
 
-    return data;
+    window.location.href = "/auth";
   } catch (error) {
     const message =
       error.response?.data.message ||
