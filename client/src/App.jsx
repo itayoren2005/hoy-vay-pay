@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router";
 import { Dashboard } from "./components/Dashboard";
 import { Navbar } from "./components/Navbar";
 import { useAuth } from "./components/AuthProvider";
+import { Expenses } from "./components/Expenses";
 
 function App() {
   const { user, isPending, isLoggedIn } = useAuth();
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/auth" element={<AuthForm />} />
+        <Route path="/expenses" element={<Expenses />} />
       </Routes>
       <ToastContainer position="top-right" theme="colored" autoClose={5000} />
     </>

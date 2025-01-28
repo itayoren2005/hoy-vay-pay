@@ -1,5 +1,6 @@
 import React from "react";
 import { useAuth } from "../components/AuthProvider";
+import "./Dashboard.css";
 
 export const Dashboard = () => {
   const { user } = useAuth();

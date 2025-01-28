@@ -21,11 +21,11 @@ export const Navbar = () => {
           Home
         </NavLink>
         <NavLink
-          to="/about"
+          to="/expenses"
           className={({ isActive }) => (isActive ? "active" : "")}
           onClick={() => setIsOpen(false)}
         >
-          About
+          Expenses
         </NavLink>
         <NavLink
           to="#"

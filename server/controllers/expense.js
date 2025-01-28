@@ -9,7 +9,7 @@ const { z } = require("zod");
 
 const addExpense = async (req, res) => {
   try {
-    if (req.user._id !== req.params.userId) {
+    if (req.user._id != req.params.userId) {
       return res.status(403).json({ message: "forbidden" });
     }
 
@@ -41,7 +41,7 @@ const addExpense = async (req, res) => {
 
 const getExpenses = async (req, res) => {
   try {
-    if (req.user._id !== req.params.userId) {
+    if (req.user._id != req.params.userId) {
       return res.status(403).json({ message: "forbidden" });
     }
     const userId = userIdValidation.parse(req.params.userId);
@@ -65,7 +65,7 @@ const getExpenses = async (req, res) => {
 
 const updateExpense = async (req, res) => {
   try {
-    if (req.user._id !== req.params.userId) {
+    if (req.user._id != req.params.userId) {
       return res.status(403).json({ message: "forbidden" });
     }
     const userId = userIdValidation.parse(req.params.userId);
@@ -109,7 +109,7 @@ const updateExpense = async (req, res) => {
 
 const deleteExpense = async (req, res) => {
   try {
-    if (req.user._id !== req.params.userId) {
+    if (req.user._id != req.params.userId) {
       return res.status(403).json({ message: "forbidden" });
     }
     const userId = userIdValidation.parse(req.params.userId);
