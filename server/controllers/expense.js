@@ -29,7 +29,7 @@ const addExpense = async (req, res) => {
     userExists.expenses.push(expense);
     await userExists.save();
 
-    return res.status(201).json({ message: "expense created" });
+    return res.status(201).json({ message: "expense created", expense });
   } catch (error) {
     console.log(error);
     if (error instanceof z.ZodError) {
@@ -144,9 +144,47 @@ const deleteExpense = async (req, res) => {
   }
 };
 
+const getTotalExpenses = async (req, res) => {
+  try {
+    if (req.user._id != req.params.userId) {
+      return res.status(403).json({ message: "forbidden" });
+    }
+    const userId = userIdValidation.parse(req.params.userId);
+
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    const expenses = await Expense.find({ _id: { $in: userExists.expenses } });
+
+    const totalExpenses = expenses.reduce((total, expense) => {
+      switch (expense.currency) {
+        case "ILS":
+          return total + expense.amount;
+        case "USD":
+          return total + expense.amount * 3.14;
+        case "EUR":
+          return total + expense.amount * 4;
+        default:
+          return total;
+      }
+    }, 0);
+
+    return res.status(200).json(totalExpenses);
+  } catch (error) {
+    console.log(error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ messege: error.errors[0].message });
+    }
+    return res.status(500).json({ message: "internal server error" });
+  }
+};
+
 module.exports = {
   addExpense,
   getExpenses,
   updateExpense,
   deleteExpense,
+  getTotalExpenses,
 };

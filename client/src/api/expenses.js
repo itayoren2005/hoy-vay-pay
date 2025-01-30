@@ -17,11 +17,24 @@ export const createExpenses = async (payload) => {
 
 export const getExpenses = async (userId) => {
   try {
-    return await api.get(`/get-expenses/${userId}`);
+    const { data } = await api.get(`/get-expenses/${userId}`);
+    return data;
   } catch (error) {
     const message =
       error.response?.data.message ||
       "an error occurred while fetching the expenses please try again";
+
+    throw new Error(message);
+  }
+};
+export const getTotalExpenses = async (userId) => {
+  try {
+    const { data } = await api.get(`/get-total-expenses/${userId}`);
+    return data;
+  } catch (error) {
+    const message =
+      error.response?.data.message ||
+      "an error occurred while fetching the total expenses please try again";
 
     throw new Error(message);
   }

@@ -3,10 +3,11 @@ import "./Expenses.css";
 import { useAuth } from "./AuthProvider";
 import { createExpenses, getExpenses } from "../api/expenses";
 import { toast } from "react-toastify";
+import { CURRENCY_SYMBOLS } from "../constants";
 
 export const Expenses = () => {
   const [isPending, setIsPending] = useState(false);
-  const [expenses, setExpenses] = useState();
+  const [expenses, setExpenses] = useState([{}]);
   const { user } = useAuth();
 
   const titleRef = useRef(null);
@@ -45,6 +46,7 @@ export const Expenses = () => {
       const data = await createExpenses(payload);
       toast.success(data.message);
       resetFields();
+      setExpenses((prevExpenses) => [...prevExpenses, data.expense]);
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -52,11 +54,20 @@ export const Expenses = () => {
     }
   };
   useEffect(() => {
-    setExpenses(async () => {
-      await getExpenses(user.id);
-    })();
-    console.log(expenses);
+    const fetchExpenses = async () => {
+      try {
+        const data = await getExpenses(user.id);
+        setExpenses(data);
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+
+    fetchExpenses();
   }, []);
+
+  const deleteExpense = () => {};
+  const editExpense = () => {};
 
   return (
     <main className="expense-container">
@@ -125,24 +136,31 @@ export const Expenses = () => {
             <th>Description</th>
             <th>Amount</th>
             <th>Tag</th>
-            <th>Currency</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Groceries</td>
-            <td>Weekly groceries</td>
-            <td>150</td>
-            <td>Food</td>
-            <td>ILS</td>
-            <td>
-              <div className="action-buttons">
-                <button className="edit-button">Edit</button>
-                <button className="delete-button">Delete</button>
-              </div>
-            </td>
-          </tr>
+          {expenses.map((expense) => (
+            <tr key={expense._id}>
+              <td>{expense.title}</td>
+              <td>{expense.description}</td>
+              <td>
+                {expense.amount}
+                {CURRENCY_SYMBOLS[expense.currency]}
+              </td>
+              <td>{expense.tag}</td>
+              <td>
+                <div className="action-buttons">
+                  <button onClick={editExpense} className="edit-button">
+                    Edit
+                  </button>
+                  <button onClick={deleteExpense} className="delete-button">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </main>

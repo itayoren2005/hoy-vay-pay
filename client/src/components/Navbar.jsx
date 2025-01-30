@@ -9,7 +9,7 @@ export const Navbar = () => {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-logo">
-        Logo
+        <img src="/images/logo,webp" alt="logo" width={30} height={50} />
       </Link>
 
       <div className={`navbar-links ${isOpen ? "open" : ""}`}>
