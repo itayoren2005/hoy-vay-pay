@@ -1,32 +1,32 @@
-.expense-container {
+.object-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 6rem 1rem 1rem 1rem;
 }
 
-.expense-container h1 {
+.object-container h1 {
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
 }
 
-.expense-container div {
+.object-container div {
   margin-bottom: 1.5rem;
 }
 
-.expense-container label {
+.object-container label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: #000;
 }
-.expense-button:disabled {
+.object-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.expense-container input,
-.expense-container select {
+.object-container input,
+.object-container select {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #e5e7eb;
@@ -35,16 +35,16 @@
   background-color: white;
 }
 
-.expense-container input::placeholder {
+.object-container input::placeholder {
   color: #9ca3af;
 }
 
-.expense-container select {
+.object-container select {
   background-color: white;
   cursor: pointer;
 }
 
-.expense-button {
+.object-button {
   width: auto;
   background-color: var(--primary-color);
   color: white;
@@ -65,25 +65,25 @@ input[type="number"] {
   -moz-appearance: none;
 }
 
-.expenses-table {
+.objects-table {
   width: 100%;
   margin-top: 2rem;
   border-collapse: collapse;
 }
 
-.expenses-table th,
-.expenses-table td {
+.objects-table th,
+.objects-table td {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.expenses-table th {
+.objects-table th {
   font-weight: 500;
   color: #6b7280;
 }
 
-.expenses-table td {
+.objects-table td {
   color: #111827;
 }
 

@@ -9,7 +9,7 @@ export const Navbar = () => {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-logo">
-        <img src="/images/logo,webp" alt="logo" width={30} height={50} />
+        <img src="\images\logo.webp" alt="logo" width={30} height={50} />
       </Link>
 
       <div className={`navbar-links ${isOpen ? "open" : ""}`}>
@@ -26,6 +26,13 @@ export const Navbar = () => {
           onClick={() => setIsOpen(false)}
         >
           Expenses
+        </NavLink>
+        <NavLink
+          to="/incomes"
+          className={({ isActive }) => (isActive ? "active" : "")}
+          onClick={() => setIsOpen(false)}
+        >
+          Incomes
         </NavLink>
         <NavLink
           to="#"

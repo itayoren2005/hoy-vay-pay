@@ -6,10 +6,11 @@ const {
 } = require("../lib/validation/income");
 const { userIdValidation } = require("../lib/validation/user");
 const { z } = require("zod");
+const income = require("../models/income");
 
 const addIncome = async (req, res) => {
   try {
-    if (req.user._id !== req.params.userId) {
+    if (req.user._id != req.params.userId) {
       return res.status(403).json({ message: "forbidden" });
     }
 
@@ -41,7 +42,7 @@ const addIncome = async (req, res) => {
 
 const getIncomes = async (req, res) => {
   try {
-    if (req.user._id !== req.params.userId) {
+    if (req.user._id != req.params.userId) {
       return res.status(403).json({ message: "forbidden" });
     }
     const userId = userIdValidation.parse(req.params.userId);
@@ -65,7 +66,7 @@ const getIncomes = async (req, res) => {
 
 const updateIncome = async (req, res) => {
   try {
-    if (req.user._id !== req.params.userId) {
+    if (req.user._id != req.params.userId) {
       return res.status(403).json({ message: "forbidden" });
     }
     const userId = userIdValidation.parse(req.params.userId);
@@ -109,7 +110,7 @@ const updateIncome = async (req, res) => {
 
 const deleteIncome = async (req, res) => {
   try {
-    if (req.user._id !== req.params.userId) {
+    if (req.user._id != req.params.userId) {
       return res.status(403).json({ message: "forbidden" });
     }
     const userId = userIdValidation.parse(req.params.userId);
@@ -143,10 +144,38 @@ const deleteIncome = async (req, res) => {
     return res.status(500).json({ message: "internal server error" });
   }
 };
+const getTotalIncomes = async (req, res) => {
+  try {
+    if (req.user._id != req.params.userId) {
+      return res.status(403).json({ message: "forbidden" });
+    }
+    const userId = userIdValidation.parse(req.params.userId);
+
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    const incomes = await Income.find({ _id: { $in: userExists.incomes } });
+
+    const totalIncomes = incomes.reduce((total, income) => {
+      return (total += income.amount);
+    }, 0);
+
+    return res.status(200).json(totalIncomes);
+  } catch (error) {
+    console.log(error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ messege: error.errors[0].message });
+    }
+    return res.status(500).json({ message: "internal server error" });
+  }
+};
 
 module.exports = {
   addIncome,
   getIncomes,
   updateIncome,
   deleteIncome,
+  getTotalIncomes,
 };

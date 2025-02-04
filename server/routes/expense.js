@@ -11,8 +11,8 @@ const {
 
 router.post("/add-expense/:userId", addExpense);
 router.get("/get-expenses/:userId", getExpenses);
-router.patch("/update-expense/:userId/:incomeId", updateExpense);
-router.delete("/delete-expense/:userId/:incomeId", deleteExpense);
+router.patch("/update-expense/:userId/:expenseId", updateExpense);
+router.delete("/delete-expense/:userId/:expenseId", deleteExpense);
 router.get("/get-total-expenses/:userId", getTotalExpenses);
 
 module.exports = router;

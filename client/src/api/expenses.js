@@ -1,6 +1,6 @@
 import api from "./api";
 
-export const createExpenses = async (payload) => {
+export const createExpense = async (payload) => {
   try {
     const { userId } = payload;
     const { data } = await api.post(`/add-expense/${userId}`, payload);
@@ -36,6 +36,33 @@ export const getTotalExpenses = async (userId) => {
       error.response?.data.message ||
       "an error occurred while fetching the total expenses please try again";
 
+    throw new Error(message);
+  }
+};
+
+export const editExpense = async (userId, expenseId, expense) => {
+  try {
+    const { data } = await api.patch(
+      `/update-expense/${userId}/${expenseId}`,
+      expense
+    );
+    return data;
+  } catch (error) {
+    const message =
+      error.response?.data.message ||
+      "an error occurred while updating expenses please try again";
+    throw new Error(message);
+  }
+};
+
+export const deleteExpense = async (userId, expenseId) => {
+  try {
+    const { data } = await api.delete(`/delete-expense/${userId}/${expenseId}`);
+    return data;
+  } catch (error) {
+    const message =
+      error.response?.data.message ||
+      "an error occurred while deleting expense please try again";
     throw new Error(message);
   }
 };

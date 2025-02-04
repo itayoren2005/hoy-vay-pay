@@ -24,12 +24,38 @@ const addExpense = async (req, res) => {
       return res.status(404).json({ message: "user not found" });
     }
 
-    const expense = new Expense({ title, description, amount, tag, currency });
+    const BASE_CURRENCY = "ILS";
+
+    let exchangedAmount;
+
+    if (currency !== BASE_CURRENCY) {
+      const response = await fetch(
+        `https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/pair/${currency}/ILS/${amount}`
+      );
+      if (!response.ok) {
+        return res
+          .status(400)
+          .json({ message: "an error accrued while fetching rate" });
+      }
+      const data = await response.json();
+      exchangedAmount = data.conversion_result;
+    }
+
+    const expense = new Expense({
+      title,
+      description,
+      amount,
+      tag,
+      currency,
+      exchangedAmount,
+    });
     await expense.save();
     userExists.expenses.push(expense);
     await userExists.save();
 
-    return res.status(201).json({ message: "expense created", expense });
+    return res
+      .status(201)
+      .json({ message: "expense created", object: expense });
   } catch (error) {
     console.log(error);
     if (error instanceof z.ZodError) {
@@ -97,7 +123,10 @@ const updateExpense = async (req, res) => {
     }
     await updatedExpense.save();
 
-    return res.status(200).json({ message: "expense updated successfully" });
+    return res.status(200).json({
+      message: "expense updated successfully",
+      object: updatedExpense,
+    });
   } catch (error) {
     console.log(error);
     if (error instanceof z.ZodError) {
@@ -120,7 +149,7 @@ const deleteExpense = async (req, res) => {
       return res.status(404).json({ message: "user not found" });
     }
 
-    if (!userExists.expenses.includes(expenseId)) {
+    if (!userExists.expenses.some((id) => id.toString() === expenseId)) {
       return res.status(404).json({ message: "expense not found" });
     }
 
@@ -134,11 +163,14 @@ const deleteExpense = async (req, res) => {
     );
     await userExists.save();
 
-    return res.status(200).json({ message: "expense deleted successfully" });
+    return res.status(200).json({
+      message: "expense deleted successfully",
+      deletedExpense,
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ messege: error.errors[0].message });
+      return res.status(400).json({ message: error.errors[0].message });
     }
     return res.status(500).json({ message: "internal server error" });
   }
@@ -159,16 +191,8 @@ const getTotalExpenses = async (req, res) => {
     const expenses = await Expense.find({ _id: { $in: userExists.expenses } });
 
     const totalExpenses = expenses.reduce((total, expense) => {
-      switch (expense.currency) {
-        case "ILS":
-          return total + expense.amount;
-        case "USD":
-          return total + expense.amount * 3.14;
-        case "EUR":
-          return total + expense.amount * 4;
-        default:
-          return total;
-      }
+      if (expense.currency != "ILS") return (total += expense.exchangedAmount);
+      else return (total += expense.amount);
     }, 0);
 
     return res.status(200).json(totalExpenses);

@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../components/AuthProvider";
 import "./Dashboard.css";
 import { getTotalExpenses } from "../api/expenses";
+import { CURRENCY_SYMBOLS } from "../constants";
+import { getTotalIncomes } from "../api/income";
 
 export const Dashboard = () => {
   const { user } = useAuth();
   const [totalExpense, setTotalExpense] = useState(0);
+  const [totalIncome, setTotalIncome] = useState(0);
 
   useEffect(() => {
     const fetchTotalExpenses = async () => {
@@ -16,7 +19,16 @@ export const Dashboard = () => {
         console.error(error.message);
       }
     };
+    const fetchTotalIncomes = async () => {
+      try {
+        const data = await getTotalIncomes(user.id);
+        setTotalIncome(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
     fetchTotalExpenses();
+    fetchTotalIncomes();
   }, []);
 
   return (
@@ -28,12 +40,18 @@ export const Dashboard = () => {
       <div className="summary">
         <div className="card income">
           <h2>Total Incomes</h2>
-          <p>$1000</p>
+          <p>
+            {totalIncome}
+            {CURRENCY_SYMBOLS.ILS}
+          </p>
         </div>
 
         <div className="card expenses">
           <h2>Total Expenses</h2>
-          <p>{totalExpense}</p>
+          <p>
+            {totalExpense}
+            {CURRENCY_SYMBOLS.ILS}
+          </p>
         </div>
 
         <div className="card balance">
