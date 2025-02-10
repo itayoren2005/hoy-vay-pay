@@ -30,7 +30,7 @@ const addIncome = async (req, res) => {
     userExists.incomes.push(income);
     await userExists.save();
 
-    return res.status(201).json({ message: "income created" });
+    return res.status(201).json({ message: "income created", object: income });
   } catch (error) {
     console.log(error);
     if (error instanceof z.ZodError) {

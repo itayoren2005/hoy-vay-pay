@@ -7,6 +7,8 @@ const {
 const { userIdValidation } = require("../lib/validation/user");
 const { z } = require("zod");
 
+const BASE_CURRENCY = "ILS";
+
 const addExpense = async (req, res) => {
   try {
     if (req.user._id != req.params.userId) {
@@ -23,8 +25,6 @@ const addExpense = async (req, res) => {
     if (!userExists) {
       return res.status(404).json({ message: "user not found" });
     }
-
-    const BASE_CURRENCY = "ILS";
 
     let exchangedAmount;
 
@@ -97,9 +97,8 @@ const updateExpense = async (req, res) => {
     const userId = userIdValidation.parse(req.params.userId);
     const expenseId = expenseIdValidation.parse(req.params.expenseId);
 
-    const { title, description, amount, tag, currency } = expenseScheme.parse(
-      req.body
-    );
+    const { title, description, amount, tag, currency, exchangedAmount } =
+      expenseScheme.parse(req.body);
 
     const userExists = await User.findById(userId);
     if (!userExists) {
@@ -110,12 +109,28 @@ const updateExpense = async (req, res) => {
       return res.status(404).json({ message: "expense not found" });
     }
 
+    let tempExchangedAmount;
+
+    if (currency !== BASE_CURRENCY) {
+      const response = await fetch(
+        `https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/pair/${currency}/ILS/${amount}`
+      );
+      if (!response.ok) {
+        return res
+          .status(400)
+          .json({ message: "an error accrued while fetching rate" });
+      }
+      const data = await response.json();
+      tempExchangedAmount = data.conversion_result;
+    }
+
     const updatedExpense = await Expense.findByIdAndUpdate(expenseId, {
       title,
       description,
       amount,
       tag,
       currency,
+      exchangedAmount: tempExchangedAmount,
     });
 
     if (!updatedExpense) {
@@ -192,7 +207,7 @@ const getTotalExpenses = async (req, res) => {
 
     const totalExpenses = expenses.reduce((total, expense) => {
       if (expense.currency != "ILS") return (total += expense.exchangedAmount);
-      else return (total += expense.amount);
+      return (total += expense.amount);
     }, 0);
 
     return res.status(200).json(totalExpenses);

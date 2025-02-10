@@ -1,32 +1,32 @@
-.object-container {
+.form-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 6rem 1rem 1rem 1rem;
 }
 
-.object-container h1 {
+.form-container h1 {
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
 }
 
-.object-container div {
+.form-container div {
   margin-bottom: 1.5rem;
 }
 
-.object-container label {
+.form-container label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: #000;
 }
-.object-button:disabled {
+.form-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.object-container input,
-.object-container select {
+.form-container input,
+.form-container select {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #e5e7eb;
@@ -35,16 +35,16 @@
   background-color: white;
 }
 
-.object-container input::placeholder {
+.form-container input::placeholder {
   color: #9ca3af;
 }
 
-.object-container select {
+.form-container select {
   background-color: white;
   cursor: pointer;
 }
 
-.object-button {
+.form-button {
   width: auto;
   background-color: var(--primary-color);
   color: white;
@@ -65,25 +65,25 @@ input[type="number"] {
   -moz-appearance: none;
 }
 
-.objects-table {
+.form-table {
   width: 100%;
   margin-top: 2rem;
   border-collapse: collapse;
 }
 
-.objects-table th,
-.objects-table td {
+.form-table th,
+.form-table td {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.objects-table th {
+.form-table th {
   font-weight: 500;
   color: #6b7280;
 }
 
-.objects-table td {
+.form-table td {
   color: #111827;
 }
 

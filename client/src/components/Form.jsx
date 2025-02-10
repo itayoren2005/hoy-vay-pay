@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import "./Objects.css";
+import "./Form.css";
 import { useAuth } from "./AuthProvider";
 import { toast } from "react-toastify";
 import { CURRENCY_SYMBOLS } from "../constants";
@@ -113,7 +113,7 @@ export const Form = ({
   };
 
   return (
-    <main className="object-container">
+    <main className="form-container">
       <h1>{formTitle}</h1>
       <form onSubmit={handleSubmit}>
         <div>
@@ -165,11 +165,11 @@ export const Form = ({
             <option value="EUR">EUR</option>
           </select>
         </div>
-        <button type="submit" className="object-button" disabled={isPending}>
+        <button type="submit" className="form-button" disabled={isPending}>
           {editingObject ? "Update" : "Add"} {formTitle}
         </button>
       </form>
-      <table className="objects-table">
+      <table className="form-table">
         <thead>
           <tr>
             <th>Title</th>
