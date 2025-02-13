@@ -111,7 +111,11 @@ const updateExpense = async (req, res) => {
 
     let tempExchangedAmount;
 
-    if (currency !== BASE_CURRENCY) {
+    if (
+      currency !== BASE_CURRENCY &&
+      currency !== userExists.currency &&
+      amount !== exchangedAmount
+    ) {
       const response = await fetch(
         `https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/pair/${currency}/ILS/${amount}`
       );

@@ -3,6 +3,7 @@ import "./Form.css";
 import { useAuth } from "./AuthProvider";
 import { toast } from "react-toastify";
 import { CURRENCY_SYMBOLS } from "../constants";
+import { Divide, Filter } from "lucide-react";
 
 export const Form = ({
   formTitle,
@@ -15,6 +16,7 @@ export const Form = ({
   const [isPending, setIsPending] = useState(false);
   const [objects, setObjects] = useState([]);
   const [editingObject, setEditingObject] = useState(null);
+  const [inputSearch, setInputSearch] = useState("");
   const { user } = useAuth();
 
   const titleRef = useRef(null);
@@ -22,6 +24,10 @@ export const Form = ({
   const amountRef = useRef(null);
   const tagRef = useRef(null);
   const currencyRef = useRef(null);
+
+  const filteredObjects = objects.filter((object) =>
+    object.title.toLowerCase().includes(inputSearch.toLowerCase())
+  );
 
   const resetFields = (object = null) => {
     if (!object) {
@@ -169,6 +175,19 @@ export const Form = ({
           {editingObject ? "Update" : "Add"} {formTitle}
         </button>
       </form>
+
+      <div className="form-filter-section">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={inputSearch}
+          onChange={({ target }) => setInputSearch(target.value)}
+        />
+        <button>
+          <Filter />
+        </button>
+      </div>
+
       <table className="form-table">
         <thead>
           <tr>
@@ -181,34 +200,38 @@ export const Form = ({
           </tr>
         </thead>
         <tbody>
-          {objects.map((object) => (
-            <tr key={object._id}>
-              <td>{object.title}</td>
-              <td>{object.description}</td>
-              <td>
-                {object.amount}
-                {CURRENCY_SYMBOLS[object.currency]}
-              </td>
-              <td>{object.exchangedAmount}</td>
-              <td>{object.tag}</td>
-              <td>
-                <div className="action-buttons">
-                  <button
-                    onClick={() => handleEditObject(object)}
-                    className="edit-button"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteObject(object._id)}
-                    className="delete-button"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
+          {filteredObjects.length === 0 ? (
+            <h1 className="not-found">Not found for "{inputSearch}"</h1>
+          ) : (
+            filteredObjects.map((object) => (
+              <tr key={object._id}>
+                <td>{object.title}</td>
+                <td>{object.description}</td>
+                <td>
+                  {object.amount}
+                  {CURRENCY_SYMBOLS[object.currency]}
+                </td>
+                <td>{object.exchangedAmount}</td>
+                <td>{object.tag}</td>
+                <td>
+                  <div className="action-buttons">
+                    <button
+                      onClick={() => handleEditObject(object)}
+                      className="edit-button"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteObject(object._id)}
+                      className="delete-button"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </main>

@@ -7,11 +7,12 @@ import { Navbar } from "./components/Navbar";
 import { useAuth } from "./components/AuthProvider";
 import { Expenses } from "./components/Expenses";
 import { Incomes } from "./components/Income";
+import { Loading } from "./components/Loading";
 
 function App() {
   const { user, isPending, isLoggedIn } = useAuth();
 
-  if (isPending) return <div>Loading...</div>;
+  if (isPending) return <Loading />;
 
   console.log(user);
 

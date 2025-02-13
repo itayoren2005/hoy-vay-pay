@@ -7,8 +7,8 @@ import { getTotalIncomes } from "../api/income";
 
 export const Dashboard = () => {
   const { user } = useAuth();
-  const [totalExpense, setTotalExpense] = useState(0);
-  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(null);
+  const [totalIncome, setTotalIncome] = useState(null);
 
   useEffect(() => {
     const fetchTotalExpenses = async () => {
@@ -41,7 +41,7 @@ export const Dashboard = () => {
         <div className="card income">
           <h2>Total Incomes</h2>
           <p>
-            {totalIncome}
+            {!totalIncome ? "Loading..." : totalIncome}
             {CURRENCY_SYMBOLS.ILS}
           </p>
         </div>
@@ -49,14 +49,18 @@ export const Dashboard = () => {
         <div className="card expenses">
           <h2>Total Expenses</h2>
           <p>
-            {totalExpense}
+            {!totalExpense ? "Loading..." : totalExpense}
             {CURRENCY_SYMBOLS.ILS}
           </p>
         </div>
 
         <div className="card balance">
           <h2>Balance</h2>
-          <p>$200</p>
+          <p>
+            {!totalIncome && !totalExpense
+              ? "Loading"
+              : (totalIncome - totalExpense).toFixed(2)}
+          </p>
         </div>
       </div>
     </div>
