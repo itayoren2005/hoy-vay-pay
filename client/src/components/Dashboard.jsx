@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../components/AuthProvider";
-import "./Dashboard.css";
+import "../styles/Dashboard.css";
 import { getTotalExpenses } from "../api/expenses";
 import { CURRENCY_SYMBOLS } from "../constants";
 import { getTotalIncomes } from "../api/income";

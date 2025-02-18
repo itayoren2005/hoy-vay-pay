@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router";
-import "./Navbar.css";
+import "../styles/Navbar.css";
 import { logOut } from "../api/auth";
 
 export const Navbar = () => {

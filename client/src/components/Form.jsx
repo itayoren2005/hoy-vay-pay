@@ -1,9 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
-import "./Form.css";
+import "../styles/Form.css";
 import { useAuth } from "./AuthProvider";
 import { toast } from "react-toastify";
 import { CURRENCY_SYMBOLS } from "../constants";
-import { Divide, Filter } from "lucide-react";
+import { Loading } from "./Loading";
+import { Filters } from "./Filters";
 
 export const Form = ({
   formTitle,
@@ -17,6 +18,7 @@ export const Form = ({
   const [objects, setObjects] = useState([]);
   const [editingObject, setEditingObject] = useState(null);
   const [inputSearch, setInputSearch] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState(null);
   const { user } = useAuth();
 
   const titleRef = useRef(null);
@@ -176,17 +178,12 @@ export const Form = ({
         </button>
       </form>
 
-      <div className="form-filter-section">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={inputSearch}
-          onChange={({ target }) => setInputSearch(target.value)}
-        />
-        <button>
-          <Filter />
-        </button>
-      </div>
+      <Filters
+        inputSearch={inputSearch}
+        setInputSearch={setInputSearch}
+        selectedFilter={selectedFilter}
+        setSelectedFilter={setSelectedFilter}
+      />
 
       <table className="form-table">
         <thead>
@@ -200,9 +197,7 @@ export const Form = ({
           </tr>
         </thead>
         <tbody>
-          {filteredObjects.length === 0 ? (
-            <h1 className="not-found">Not found for "{inputSearch}"</h1>
-          ) : (
+          {filteredObjects.length ? (
             filteredObjects.map((object) => (
               <tr key={object._id}>
                 <td>{object.title}</td>
@@ -231,6 +226,8 @@ export const Form = ({
                 </td>
               </tr>
             ))
+          ) : (
+            <h1 className="not-found">Not found for "{inputSearch}"</h1>
           )}
         </tbody>
       </table>
