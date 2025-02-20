@@ -15,8 +15,6 @@ export const FilterModal = ({
   MAX_BOUND,
 }) => {
   const handleSliderChange = (value) => {
-    console.log(value);
-
     setRangeValue(value);
   };
 

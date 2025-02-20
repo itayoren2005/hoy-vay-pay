@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [isPendig, setIsPendig] = useState(false);
+  const [isPending, setIsPending] = useState(false);
 
   const fullNameRef = useRef(null);
   const usernameRef = useRef(null);
@@ -28,7 +28,7 @@ export const AuthForm = () => {
     };
 
     try {
-      setIsPendig(true);
+      setIsPending(true);
       if (isLogin) {
         const data = await signIn(payload);
         toast.success(data.message);
@@ -41,7 +41,7 @@ export const AuthForm = () => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      setIsPendig(false);
+      setIsPending(false);
     }
   }
 
@@ -95,7 +95,7 @@ export const AuthForm = () => {
               ref={passwordRef}
             />
           </div>
-          <button type="submit" className="btn" disabled={isPendig}>
+          <button type="submit" className="btn" disabled={isPending}>
             {isLogin ? "Login" : "Sign Up"}
           </button>
         </form>

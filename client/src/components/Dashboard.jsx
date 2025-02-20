@@ -4,6 +4,8 @@ import "../styles/Dashboard.css";
 import { getTotalExpenses } from "../api/expenses";
 import { CURRENCY_SYMBOLS } from "../constants";
 import { getTotalIncomes } from "../api/income";
+import { LineChart } from "./charts/LineChart";
+import { BarChart } from "./charts/BarChart";
 
 export const Dashboard = () => {
   const { user } = useAuth();
@@ -62,6 +64,10 @@ export const Dashboard = () => {
               : (totalIncome - totalExpense).toFixed(2)}
           </p>
         </div>
+      </div>
+      <div className="charts">
+        <LineChart />
+        <BarChart />
       </div>
     </div>
   );

@@ -3,7 +3,6 @@ import "../styles/Form.css";
 import { useAuth } from "./AuthProvider";
 import { toast } from "react-toastify";
 import { CURRENCY_SYMBOLS } from "../constants";
-import { Loading } from "./Loading";
 import { Filters } from "./Filters";
 
 export const Form = ({
@@ -27,9 +26,19 @@ export const Form = ({
   const tagRef = useRef(null);
   const currencyRef = useRef(null);
 
-  const filteredObjects = objects.filter((object) =>
-    object.title.toLowerCase().includes(inputSearch.toLowerCase())
-  );
+  const filteredObjects = objects.filter((object) => {
+    const mathSearch = object.title
+      .toLowerCase()
+      .includes(inputSearch.toLowerCase());
+    if (selectedFilter && selectedFilter.type === "amount") {
+      return (
+        mathSearch &&
+        object.amount >= selectedFilter.min &&
+        object.amount <= selectedFilter.max
+      );
+    }
+    return mathSearch;
+  });
 
   const resetFields = (object = null) => {
     if (!object) {
@@ -90,10 +99,13 @@ export const Form = ({
   useEffect(() => {
     const fetchObjects = async () => {
       try {
+        setIsPending(true);
         const data = await getObjects(user.id);
         setObjects(data);
       } catch (error) {
         toast.error(error.message);
+      } finally {
+        setIsPending(false);
       }
     };
 
@@ -183,6 +195,7 @@ export const Form = ({
         setInputSearch={setInputSearch}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
+        MAX_BOUND={objects ? Math.max(...objects.map((obj) => obj.amount)) : 0}
       />
 
       <table className="form-table">
@@ -197,7 +210,7 @@ export const Form = ({
           </tr>
         </thead>
         <tbody>
-          {filteredObjects.length ? (
+          {filteredObjects.length || isPending ? (
             filteredObjects.map((object) => (
               <tr key={object._id}>
                 <td>{object.title}</td>
