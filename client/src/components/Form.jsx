@@ -219,7 +219,11 @@ export const Form = ({
                   {object.amount}
                   {CURRENCY_SYMBOLS[object.currency]}
                 </td>
-                <td>{object.exchangedAmount}</td>
+                <td>
+                  {object.exchangedAmount !== 0
+                    ? object.exchangedAmount
+                    : object.amount}
+                </td>
                 <td>{object.tag}</td>
                 <td>
                   <div className="action-buttons">
