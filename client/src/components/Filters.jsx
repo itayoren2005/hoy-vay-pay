@@ -47,7 +47,7 @@ export const Filters = ({
         onFilterSelect={handleFilterSelect}
         rangeValue={rangeValues}
         setRangeValue={setRangeValues}
-        MIN_BOUND={MAX_BOUND}
+        MIN_BOUND={MIN_BOUND}
         MAX_BOUND={MAX_BOUND}
       />
       {selectedFilter && (
