@@ -8,6 +8,8 @@ const { userIdValidation } = require("../lib/validation/user");
 const { z } = require("zod");
 const income = require("../models/income");
 
+const BASE_CURRENCY = "ILS";
+
 const addIncome = async (req, res) => {
   try {
     if (req.user._id != req.params.userId) {
@@ -25,7 +27,29 @@ const addIncome = async (req, res) => {
       return res.status(404).json({ message: "user not found" });
     }
 
-    const income = new Income({ title, description, amount, tag, currency });
+    let exchangedAmount;
+
+    if (currency !== BASE_CURRENCY) {
+      const response = await fetch(
+        `https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/pair/${currency}/ILS/${amount}`
+      );
+      if (!response.ok) {
+        return res
+          .status(400)
+          .json({ message: "an error accrued while fetching rate" });
+      }
+      const data = await response.json();
+      exchangedAmount = data.conversion_result;
+    }
+
+    const income = new Income({
+      title,
+      description,
+      amount,
+      tag,
+      currency,
+      exchangedAmount,
+    });
     await income.save();
     userExists.incomes.push(income);
     await userExists.save();
