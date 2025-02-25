@@ -109,12 +109,31 @@ const updateIncome = async (req, res) => {
       return res.status(404).json({ message: "income not found" });
     }
 
+    let tempExchangedAmount;
+
+    if (
+      currency !== BASE_CURRENCY &&
+      currency !== userExists.currency &&
+      amount !== exchangedAmount
+    ) {
+      const response = await fetch(
+        `https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_API_KEY}/pair/${currency}/ILS/${amount}`
+      );
+      if (!response.ok) {
+        return res
+          .status(400)
+          .json({ message: "an error accrued while fetching rate" });
+      }
+      const data = await response.json();
+      tempExchangedAmount = data.conversion_result;
+    }
     const updatedIncome = await Income.findByIdAndUpdate(incomeId, {
       title,
       description,
       amount,
       tag,
       currency,
+      exchangedAmount: tempExchangedAmount,
     });
 
     if (!updatedIncome) {
