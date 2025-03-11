@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import { Modal } from "./Modal";
 import { useAuth } from "./AuthProvider";
+import { logOut } from "../api/auth";
+import "../styles/Profile.css";
 
 export const Profile = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -42,6 +44,17 @@ export const Profile = () => {
             <h2>Username: {username}</h2>
             <h2>Full name: {fullName}</h2>
             <h2>Email: {email}</h2>
+            <div className="logout-section">
+              <button
+                className="logout-button"
+                onClick={() => {
+                  logOut();
+                  window.location.reload();
+                }}
+              >
+                logout
+              </button>
+            </div>
           </div>
         </div>
       </Modal>
