@@ -43,7 +43,7 @@ export const Dashboard = () => {
         <div className="card income">
           <h2>Total Incomes</h2>
           <p>
-            {!totalIncome ? "Loading..." : totalIncome}
+            {!totalIncome ? "Loading..." : totalIncome.toFixed(2)}
             {CURRENCY_SYMBOLS.ILS}
           </p>
         </div>
@@ -51,7 +51,7 @@ export const Dashboard = () => {
         <div className="card expenses">
           <h2>Total Expenses</h2>
           <p>
-            {!totalExpense ? "Loading..." : totalExpense}
+            {!totalExpense ? "Loading..." : totalExpense.toFixed(2)}
             {CURRENCY_SYMBOLS.ILS}
           </p>
         </div>

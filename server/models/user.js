@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      data: Buffer,
+      contentType: String,
+    },
     incomes: [
       {
         type: mongoose.Schema.Types.ObjectId,

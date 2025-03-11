@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router";
 import "../styles/Navbar.css";
 import { logOut } from "../api/auth";
+import { Profile } from "./Profile";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,16 +35,7 @@ export const Navbar = () => {
         >
           Incomes
         </NavLink>
-        <NavLink
-          to="#"
-          className={() => {}}
-          onClick={(e) => {
-            e.preventDefault();
-            logOut();
-          }}
-        >
-          Logout
-        </NavLink>
+        <Profile />
       </div>
       <div className="hamburger" onClick={() => setIsOpen(!isOpen)}>
         <span className="bar"></span>
