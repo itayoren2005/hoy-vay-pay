@@ -9,6 +9,7 @@ const { z } = require("zod");
 const income = require("../models/income");
 
 const BASE_CURRENCY = "ILS";
+let exchangedAmount;
 
 const addIncome = async (req, res) => {
   try {
@@ -26,8 +27,6 @@ const addIncome = async (req, res) => {
     if (!userExists) {
       return res.status(404).json({ message: "user not found" });
     }
-
-    let exchangedAmount;
 
     if (currency !== BASE_CURRENCY) {
       const response = await fetch(
