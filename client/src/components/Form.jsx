@@ -4,6 +4,9 @@ import { useAuth } from "./AuthProvider";
 import { toast } from "react-toastify";
 import { CURRENCY_SYMBOLS } from "../constants";
 import { Filters } from "./Filters";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loading } from "./Loading";
+import { data } from "react-router";
 
 export const Form = ({
   formTitle,
@@ -13,12 +16,64 @@ export const Form = ({
   getObjects,
   tagOptions,
 }) => {
-  const [isPending, setIsPending] = useState(false);
-  const [objects, setObjects] = useState([]);
   const [editingObject, setEditingObject] = useState(null);
   const [inputSearch, setInputSearch] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(null);
   const { user } = useAuth();
+
+  const queryClient = useQueryClient();
+
+  const {
+    data: objects,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["form"],
+    queryFn: () => getObjects(user.id),
+  });
+
+  const { mutate: createObjectMuted, isPendingCreate } = useMutation({
+    mutationKey: ["create-object"],
+    mutationFn: (payload) => createObject(payload),
+    onSuccess: () => {
+      toast.success(data.message);
+      resetFields();
+      queryClient.invalidateQueries({ queryKey: ["form"] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const { mutate: DeleteObjectMuted, isPendingDelete } = useMutation({
+    mutationKey: ["delete-object"],
+    mutationFn: (objectId) => deleteObject(user.id, objectId),
+    onSuccess: () => {
+      toast.success(data.message);
+      resetFields();
+      queryClient.invalidateQueries({ queryKey: ["form"] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const { mutate: updateObjectMuted, isPending: isPendingUpdate } = useMutation(
+    {
+      mutationKey: ["update-object"],
+      mutationFn: (payload) =>
+        updateObject(user.id, editingObject._id, payload),
+      onSuccess: () => {
+        toast.success(data.message);
+        setEditingObject(null);
+        resetFields();
+        queryClient.invalidateQueries({ queryKey: ["form"] });
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    }
+  );
 
   const titleRef = useRef(null);
   const descriptionRef = useRef(null);
@@ -26,7 +81,7 @@ export const Form = ({
   const tagRef = useRef(null);
   const currencyRef = useRef(null);
 
-  const filteredObjects = objects.filter((object) => {
+  const filteredObjects = objects?.filter((object) => {
     const mathSearch = object.title
       .toLowerCase()
       .includes(inputSearch.toLowerCase());
@@ -68,64 +123,19 @@ export const Form = ({
       currency: currencyRef.current.value,
     };
 
-    try {
-      setIsPending(true);
-
-      if (!editingObject) {
-        const data = await createObject(payload);
-        toast.success(data.message);
-        if (data.object) {
-          setObjects((prevObjects) => [...prevObjects, data.object]);
-        }
-      } else {
-        const data = await updateObject(user.id, editingObject._id, payload);
-        toast.success(data.message);
-        setObjects((prevObjects) =>
-          prevObjects.map((obj) =>
-            obj._id === editingObject._id ? { ...obj, ...payload } : obj
-          )
-        );
-      }
-
-      resetFields();
-      setEditingObject(null);
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setIsPending(false);
+    if (editingObject) {
+      updateObjectMuted({ ...payload, _id: editingObject._id });
+    } else {
+      createObjectMuted(payload);
     }
   };
 
-  useEffect(() => {
-    const fetchObjects = async () => {
-      try {
-        setIsPending(true);
-        const data = await getObjects(user.id);
-        setObjects(data);
-      } catch (error) {
-        toast.error(error.message);
-      } finally {
-        setIsPending(false);
-      }
-    };
-
-    fetchObjects();
-  }, []);
-
-  const handleDeleteObject = async (objectId) => {
-    try {
-      setIsPending(true);
-      const data = await deleteObject(user.id, objectId);
-      setObjects((prevObjects) =>
-        prevObjects.filter((obj) => obj._id !== objectId)
-      );
-      toast.success(data.message);
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setIsPending(false);
-    }
-  };
+  if (isLoading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
 
   const handleEditObject = (object) => {
     setEditingObject(object);
@@ -185,7 +195,11 @@ export const Form = ({
             <option value="EUR">EUR</option>
           </select>
         </div>
-        <button type="submit" className="form-button" disabled={isPending}>
+        <button
+          type="submit"
+          className="form-button"
+          disabled={isPendingCreate || isPendingUpdate}
+        >
           {editingObject ? "Update" : "Add"} {formTitle}
         </button>
       </form>
@@ -234,8 +248,9 @@ export const Form = ({
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDeleteObject(object._id)}
+                        onClick={() => DeleteObjectMuted(object._id)}
                         className="delete-button"
+                        disabled={isPendingDelete}
                       >
                         Delete
                       </button>
