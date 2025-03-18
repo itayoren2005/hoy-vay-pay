@@ -42,3 +42,11 @@
   font-size: 1rem;
   cursor: pointer;
 }
+
+@media (min-width: 768px) {
+  .modal-overlay {
+  }
+
+  .top-right-model-overlay {
+  }
+}
